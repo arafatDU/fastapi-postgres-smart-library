@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from app.schemas.user import UserResponse
+from app.schemas.book import BookResponse
 
 class LoanBase(BaseModel):
     user_id: int
@@ -10,18 +11,13 @@ class LoanBase(BaseModel):
 class LoanCreate(LoanBase):
     pass
 
-class LoanReturn(BaseModel):
-    loan_id: int
-
-class LoanExtend(BaseModel):
-    extension_days: int
-
-class Loan(LoanBase):
+class LoanResponse(LoanBase):
     id: int
     issue_date: datetime
-    return_date: Optional[datetime]
+    return_date: datetime | None
     status: str
-    extensions_count: int
+    book: BookResponse
+    user: UserResponse
 
     class Config:
         from_attributes = True

@@ -1,14 +1,13 @@
-from sqlalchemy import Column, Integer, String, DateTime, func
-from ..database import Base
+from sqlalchemy import Column, Integer, String, Boolean
+from app.models.base import BaseModel
 
-class Book(Base):
+class Book(BaseModel):
     __tablename__ = "books"
-
+    
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False)
-    author = Column(String, nullable=False)
-    isbn = Column(String, unique=True, index=True, nullable=False)
+    title = Column(String(200), nullable=False)
+    author = Column(String(100), nullable=False)
+    isbn = Column(String(13), unique=True, nullable=False)
     copies = Column(Integer, default=1)
     available_copies = Column(Integer, default=1)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    is_archived = Column(Boolean, default=False)

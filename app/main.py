@@ -1,17 +1,20 @@
+# app/main.py
 from fastapi import FastAPI
-from .database import engine, Base
-from .routers import user, book, loan
+from app.core.database import engine, Base
+from app.api.v1.users import router as users_router
+from app.api.v1.books import router as books_router
+from app.api.v1.loans import router as loans_router
+from app.api.v1.stats import router as stats_router
 
-# Create all tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Smart Library System")
+app = FastAPI(
+    title="Smart Library System",
+    version="1.0.0",
+    description="Monolithic library management system"
+)
 
-
-app.include_router(user.router, prefix="/api/users", tags=["Users"])
-app.include_router(book.router, prefix="/api/books", tags=["Books"])
-app.include_router(loan.router, prefix="/api/loans", tags=["Loans"])
-
-@app.get("/")
-async def root():
-    return {"message": "Welcome to the Smart Library System!"}
+app.include_router(users_router)
+app.include_router(books_router)
+app.include_router(loans_router)
+app.include_router(stats_router)
