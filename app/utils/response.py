@@ -1,9 +1,10 @@
 from fastapi import HTTPException, status
+from ..exceptions import ResourceNotFoundException, BadRequestException
 
 
 def not_found(detail: str = "Resource not found"):
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+    raise ResourceNotFoundException(detail=detail)
 
 
 def bad_request(detail: str = "Bad request"):
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+    raise BadRequestException(detail=detail)

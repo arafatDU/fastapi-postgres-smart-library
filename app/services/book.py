@@ -33,3 +33,23 @@ def update_book(db: Session, db_book: Book, updates: BookUpdate):
 def delete_book(db: Session, db_book: Book):
     db.delete(db_book)
     db.commit()
+
+
+def decrease_available_book(db: Session, book_id: int):
+    book = db.query(Book).filter(Book.id == book_id).first()
+    if book and book.available_copies > 0:
+        book.available_copies -= 1
+        db.commit()
+        db.refresh(book)
+        return book
+    raise ValueError("Book is not available or does not exist")
+
+
+def increase_available_book(db: Session, book_id: int):
+    book = db.query(Book).filter(Book.id == book_id).first()
+    if book:
+        book.available_copies += 1
+        db.commit()
+        db.refresh(book)
+        return book
+    raise ValueError("Book does not exist")

@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from .. import controllers, schemas, database
+from .. import services, schemas, database
+from ..exceptions import ResourceNotFoundException, BadRequestException
 
 router = APIRouter()
 
@@ -14,18 +15,18 @@ def get_db():
 
 @router.post("/", response_model=schemas.user.User)
 def create_user(user: schemas.user.UserCreate, db: Session = Depends(get_db)):
-    db_user = controllers.user.get_user_by_email(db, user.email)
+    db_user = services.user.get_user_by_email(db, user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return controllers.user.create_user(db, user)
+        raise BadRequestException(detail="Email already registered")
+    return services.user.create_user(db, user)
 
 @router.get("/{user_id}", response_model=schemas.user.User)
 def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = controllers.user.get_user(db, user_id)
+    db_user = services.user.get_user(db, user_id)
     if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise ResourceNotFoundException(detail="User not found")
     return db_user
 
 @router.get("/", response_model=list[schemas.user.User])
 def list_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return controllers.user.get_users(db, skip, limit)
+    return services.user.get_users(db, skip, limit)
