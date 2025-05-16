@@ -2,16 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from .. import services, schemas, database
 from ..exceptions import ResourceNotFoundException
+from ..database import get_db
 
 router = APIRouter()
-
-# Dependency
-def get_db():
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/", response_model=schemas.book.Book)
 def create_book(book: schemas.book.BookCreate, db: Session = Depends(get_db)):
