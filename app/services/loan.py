@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, UTC
 from ..models.loan import Loan
 from ..schemas.loan import LoanCreate, LoanReturn, LoanExtend
 
@@ -13,12 +13,12 @@ def get_loans_by_user(db: Session, user_id: int):
 
 
 def get_overdue_loans(db: Session):
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     return db.query(Loan).filter(Loan.due_date < now, Loan.status == "ACTIVE").all()
 
 
 def create_loan(db: Session, loan: LoanCreate):
-    db_loan = Loan(**loan.dict())
+    db_loan = Loan(**loan.model_dump())
     db.add(db_loan)
     db.commit()
     db.refresh(db_loan)
@@ -27,7 +27,7 @@ def create_loan(db: Session, loan: LoanCreate):
 
 def return_loan(db: Session, loan: LoanReturn):
     db_loan = get_loan(db, loan.loan_id)
-    db_loan.return_date = datetime.utcnow()
+    db_loan.return_date = datetime.now(UTC)
     db_loan.status = "RETURNED"
     db.commit()
     db.refresh(db_loan)

@@ -15,7 +15,7 @@ def get_books(db: Session, search: str | None = None, skip: int = 0, limit: int 
 
 
 def create_book(db: Session, book: BookCreate):
-    db_book = Book(**book.dict())
+    db_book = Book(**book.model_dump())
     db.add(db_book)
     db.commit()
     db.refresh(db_book)
@@ -23,7 +23,7 @@ def create_book(db: Session, book: BookCreate):
 
 
 def update_book(db: Session, db_book: Book, updates: BookUpdate):
-    for field, value in updates.dict().items():
+    for field, value in updates.model_dump().items():
         setattr(db_book, field, value)
     db.commit()
     db.refresh(db_book)
