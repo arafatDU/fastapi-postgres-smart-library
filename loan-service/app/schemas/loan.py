@@ -30,7 +30,7 @@ class LoanInDB(LoanBase):
     status: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class LoanResponse(BaseModel):
     id: int
@@ -42,7 +42,7 @@ class LoanResponse(BaseModel):
     status: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class LoanDetailResponse(BaseModel):
     id: int
@@ -54,7 +54,7 @@ class LoanDetailResponse(BaseModel):
     status: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserLoanResponse(BaseModel):
     id: int
@@ -65,7 +65,7 @@ class UserLoanResponse(BaseModel):
     status: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserLoansResponse(BaseModel):
     loans: List[UserLoanResponse]
