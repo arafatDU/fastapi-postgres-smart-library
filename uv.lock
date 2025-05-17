@@ -51,6 +51,7 @@ name = "book-service"
 version = "0.1.0"
 source = { virtual = "book-service" }
 dependencies = [
+    { name = "alembic" },
     { name = "fastapi", extra = ["standard"] },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
@@ -58,6 +59,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "alembic", specifier = ">=1.15.2" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
