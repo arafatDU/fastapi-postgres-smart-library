@@ -8,7 +8,7 @@ from app.schemas.book import BookCreate, BookResponse, BookUpdate, BookAvailabil
 from app.services.book import create_book, get_book, get_book_by_isbn, search_books, update_book, update_book_availability, delete_book
 from app.exceptions.http_exceptions import BookNotFoundException, ISBNAlreadyExistsException, NoAvailableCopiesException, InvalidRequestException, DatabaseException
 
-router = APIRouter(prefix="/books", tags=["Books"])
+router = APIRouter(tags=["Books"])
 
 @router.post("", response_model=BookResponse, status_code=status.HTTP_201_CREATED)
 def create_book_endpoint(book_data: BookCreate, db: Session = Depends(get_db)):

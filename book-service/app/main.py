@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 
-app.include_router(book_router)
+app.include_router(book_router, prefix="/api/books")
 
 
 @app.get("/health")
