@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.api.routes.book import router as book_router
 from app.database.init_db import create_tables
+from app.api.routes.loan import router as loan_router
+import os
+import uvicorn
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -12,11 +14,10 @@ async def lifespan(app: FastAPI):
     print("Application shutting down!")
 
 app = FastAPI(
-    title="Book Service",
-    description="Book Service for Smart Library System",
+    title="Loan Service",
+    description="Loan Service for Smart Library System",
     lifespan=lifespan,
 )
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,14 +27,13 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-
-app.include_router(book_router, prefix="/api/books")
-
+# Include routers
+app.include_router(loan_router, prefix="/api")
 
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8082)
+    port = int(os.getenv("PORT", 8083))
+    uvicorn.run(app, host="0.0.0.0", port=port)

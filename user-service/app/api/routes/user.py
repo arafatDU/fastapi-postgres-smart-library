@@ -7,7 +7,7 @@ from app.services.user import create_user, get_user, get_users, update_user, del
 from app.exceptions.http_exceptions import UserNotFoundException, EmailAlreadyExistsException
 from app.database.init_db import get_db
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(tags=["users"])
 
 @router.get("/", response_model=List[UserRead])
 def list_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):

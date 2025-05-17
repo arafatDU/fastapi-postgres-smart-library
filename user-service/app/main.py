@@ -27,12 +27,14 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+
+app.include_router(user_router.router, prefix="/api/users")
+
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
 
 
-app.include_router(user_router.router)
 
 if __name__ == "__main__":
     import uvicorn
