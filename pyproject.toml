@@ -20,4 +20,5 @@ dependencies = [
 [tool.uv.workspace]
 members = [
     "user-service",
+    "book-service",
 ]
