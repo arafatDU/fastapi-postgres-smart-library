@@ -16,3 +16,8 @@ dependencies = [
     "pytest-asyncio>=0.23.5",
     "httpx>=0.27.0",
 ]
+
+[tool.uv.workspace]
+members = [
+    "user-service",
+]
