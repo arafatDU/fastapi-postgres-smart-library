@@ -21,4 +21,5 @@ dependencies = [
 members = [
     "user-service",
     "book-service",
+    "loan-service",
 ]
