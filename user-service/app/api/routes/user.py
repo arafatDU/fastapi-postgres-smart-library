@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.schemas.user import UserCreate, UserRead
+from app.schemas.user import UserCreate,UserUpdate, UserRead
 from app.services.user import create_user, get_user, get_users, update_user, delete_user, get_user_by_email
 from app.exceptions.http_exceptions import UserNotFoundException, EmailAlreadyExistsException
 from app.database.init_db import get_db
@@ -27,7 +27,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 @router.put("/{user_id}", response_model=UserRead)
-def update_existing_user(user_id: int, user: UserCreate, db: Session = Depends(get_db)):
+def update_existing_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     updated = update_user(db, user_id, user)
     if updated is None:
         raise UserNotFoundException()

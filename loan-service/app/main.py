@@ -28,7 +28,7 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(loan_router, prefix="/api")
+app.include_router(loan_router, prefix="/api/loans")
 
 @app.get("/health")
 def health_check():

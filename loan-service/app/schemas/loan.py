@@ -6,6 +6,7 @@ class UserBase(BaseModel):
     id: int
     name: str
     email: str
+    role: str
 
 class BookBase(BaseModel):
     id: int
