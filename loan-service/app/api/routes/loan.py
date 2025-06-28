@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.database.init_db import get_db
 from app.schemas.loan import LoanCreate, LoanResponse, ReturnCreate, LoanDetailResponse, UserLoansResponse
-from app.services.loan import create_loan, return_book, get_loan_with_details, get_user_loans_with_details
+from app.services.loan import create_loan, return_book, get_loan_with_details, get_user_loans_with_details, get_overdue_loans
 from app.exceptions.http_exceptions import (
     LoanNotFoundException, UserNotFoundException, BookNotFoundException, 
     NoAvailableCopiesException, ServiceUnavailableException, 
@@ -54,6 +54,23 @@ async def get_user_loans(user_id: int, db: Session = Depends(get_db)):
         raise e
     except SQLAlchemyError as e:
         raise DatabaseException(detail=f"Database error occurred: {str(e)}")
+    except Exception as e:
+        raise InvalidRequestException(detail=f"An unexpected error occurred: {str(e)}")
+
+@router.get("/overdue", response_model=list[LoanDetailResponse])
+async def overdue_loans(db: Session = Depends(get_db)):
+    try:
+        overdue_loans = get_overdue_loans(db)
+        from app.services.loan import get_loan_with_details
+        result = []
+        for loan in overdue_loans:
+            import asyncio
+            result.append(asyncio.create_task(get_loan_with_details(db, loan.id)))
+
+        detailed_loans = await asyncio.gather(*result)
+        return detailed_loans
+    except LoanNotFoundException as e:
+        raise e
     except Exception as e:
         raise InvalidRequestException(detail=f"An unexpected error occurred: {str(e)}")
 

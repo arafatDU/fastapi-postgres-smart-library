@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any, List
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, UTC
 
 from app.models.loan import Loan
 from app.schemas.loan import LoanCreate, UserBase, BookBase
@@ -33,7 +33,6 @@ async def create_loan(db: Session, loan_data: LoanCreate) -> Loan:
     return db_loan
 
 async def return_book(db: Session, loan_id: int) -> Optional[Loan]:
-    """Mark a loan as returned and update book availability"""
     db_loan = db.query(Loan).filter(Loan.id == loan_id).first()
     if not db_loan:
         return None
@@ -55,12 +54,16 @@ async def return_book(db: Session, loan_id: int) -> Optional[Loan]:
     return db_loan
 
 def get_loan(db: Session, loan_id: int) -> Optional[Loan]:
-    """Get a loan by ID"""
     return db.query(Loan).filter(Loan.id == loan_id).first()
 
+
+def get_overdue_loans(db: Session):
+    now = datetime.now(UTC)
+    return db.query(Loan).filter(Loan.due_date < now, Loan.status == "ACTIVE").all()
+
+
 async def get_user_loans(db: Session, user_id: int) -> Dict[str, Any]:
-    """Get all loans for a user, checking if user exists"""
-    await get_user(user_id)  # Will raise UserNotFoundException if user does not exist
+    await get_user(user_id)  
     loans = db.query(Loan).filter(Loan.user_id == user_id).all()
     return {
         "loans": loans,
@@ -68,7 +71,6 @@ async def get_user_loans(db: Session, user_id: int) -> Dict[str, Any]:
     }
 
 async def get_loan_with_details(db: Session, loan_id: int) -> Optional[Dict[str, Any]]:
-    """Get loan details with user and book information"""
     db_loan = get_loan(db, loan_id)
     if not db_loan:
         return None
@@ -77,7 +79,8 @@ async def get_loan_with_details(db: Session, loan_id: int) -> Optional[Dict[str,
     user_data = UserBase(
         id=user["id"],
         name=user["name"],
-        email=user["email"]
+        email=user["email"],
+        role=user["role"]
     )
     
     book = await get_book(db_loan.book_id)
@@ -98,7 +101,6 @@ async def get_loan_with_details(db: Session, loan_id: int) -> Optional[Dict[str,
     }
 
 async def get_user_loans_with_details(db: Session, user_id: int) -> Dict[str, Any]:
-    """Get all loans for a user with book details"""
     loans = db.query(Loan).filter(Loan.user_id == user_id).all()
     
     result_loans = []
@@ -125,9 +127,12 @@ async def get_user_loans_with_details(db: Session, user_id: int) -> Dict[str, An
     }
 
 def get_overdue_loans(db: Session) -> List[Loan]:
-    """Get all overdue loans"""
     now = datetime.now()
-    return db.query(Loan).filter(
+    overdue_loans = db.query(Loan).filter(
         Loan.due_date < now, 
         Loan.status == "ACTIVE"
     ).all()
+    if not overdue_loans:
+        from app.exceptions.http_exceptions import LoanNotFoundException
+        raise LoanNotFoundException("No overdue loans found")
+    return overdue_loans
